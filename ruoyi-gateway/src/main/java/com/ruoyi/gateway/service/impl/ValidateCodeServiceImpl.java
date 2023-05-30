@@ -107,8 +107,15 @@ public class ValidateCodeServiceImpl implements ValidateCodeService
         {
             throw new CaptchaException("验证码已失效");
         }
+
         String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
         String captcha = redisService.getCacheObject(verifyKey);
+
+        if (StringUtils.isEmpty(captcha))
+        {
+            throw new CaptchaException("验证码已过期");
+        }
+
         redisService.deleteObject(verifyKey);
 
         if (!code.equalsIgnoreCase(captcha))
